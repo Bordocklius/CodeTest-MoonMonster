@@ -9,11 +9,10 @@ namespace MoonMonster.Codetest
         [SerializeField] private LayerMask _tankMask;
         [SerializeField, Required] private AudioSource _explosionAudio;
         [SerializeField, Required] private ParticleSystem _explosionParticles;
-        [SerializeField] private float _maxLifeTime = 2f;
-        [SerializeField] private float _explosionRadius = 5f;
-        [SerializeField] private float _maxDamage = 100f;
-        [SerializeField] private float _explosionForce = 1000f;
-
+        [SerializeField] protected float _maxLifeTime = 2f;
+        [SerializeField] protected float _explosionRadius = 5f;
+        [SerializeField] protected float _maxDamage = 100f;
+        [SerializeField] protected float _explosionForce = 1000f;
 
         protected virtual void Start()
         {

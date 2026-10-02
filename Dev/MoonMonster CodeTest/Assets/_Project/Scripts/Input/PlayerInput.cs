@@ -29,6 +29,22 @@ namespace MoonMonster.Codetest
             {
                 _shooting.Fire();
             }
+
+            CheckWeaponSwitch();
+        }
+
+        private void CheckWeaponSwitch()
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+                _shooting.ChangeWeapon(0);
+            else if (Input.GetKeyDown(KeyCode.Alpha2))
+                _shooting.ChangeWeapon(1);
+            else if (Input.GetKeyDown(KeyCode.Alpha3))
+                _shooting.ChangeWeapon(2);
+            else if (Input.mouseScrollDelta.y > 0)
+                _shooting.ChangeWeapon(true);
+            else if (Input.mouseScrollDelta.y < 0)
+                _shooting.ChangeWeapon(false);
         }
     }
 }

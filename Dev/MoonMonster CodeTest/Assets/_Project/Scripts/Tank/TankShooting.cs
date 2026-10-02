@@ -1,19 +1,35 @@
 ﻿using NaughtyAttributes;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MoonMonster.Codetest
 {
     public class TankShooting : MonoBehaviour
     {
+        [SerializeField] private List<WeaponData> _weaponData; 
         [SerializeField] private bool _lookAtMouse;
-        [SerializeField, Required] private Rigidbody _shell;
         [SerializeField, Required] private Transform _fireTransform;
         [SerializeField, Required] private AudioSource _shootingAudio;
-        [SerializeField, Required] private AudioClip _fireClip;
-        [SerializeField] private float _launchForce = 15f;
-        [SerializeField] private float _fireDelay = 0.3f;
         [SerializeField, Required] private GameObject _turret;
         [SerializeField] private float _angleOffset = 90f;
+
+        private int _currentWeaponIndex;
+        private int CurrentWeaponIndex
+        {
+            get => _currentWeaponIndex;
+            set
+            {
+                _currentWeaponIndex = value;
+                if (_currentWeaponIndex < 0)
+                    _currentWeaponIndex = _weaponData.Count - 1;
+                else if (_currentWeaponIndex >= _weaponData.Count)
+                    _currentWeaponIndex = 0;
+                _currentWeapon = _weaponData[_currentWeaponIndex];
+                Debug.Log("Weapon switched: " + _currentWeapon);
+            }
+        }
+
+        private WeaponData _currentWeapon;
 
         private float _reloadCountdown;
         private bool _fired;
@@ -22,6 +38,7 @@ namespace MoonMonster.Codetest
         private void Start()
         {
             _camera = Camera.main;
+            _currentWeapon = _weaponData[_currentWeaponIndex];
         }
 
         private void Update()
@@ -56,16 +73,16 @@ namespace MoonMonster.Codetest
             if(_fired)
                 return;
             
-            Rigidbody shellInstance =
-                Instantiate(_shell, _fireTransform.position, _fireTransform.rotation) as Rigidbody;
+            GameObject projectile = Instantiate(_currentWeapon.Projectile, _fireTransform.position, _fireTransform.rotation);
+            Rigidbody projectileRB = projectile.GetComponent<Rigidbody>();
 
-            shellInstance.linearVelocity = _launchForce * _fireTransform.forward;
+            projectileRB.linearVelocity = _currentWeapon.LaunchForce * _fireTransform.forward;
 
-            _shootingAudio.clip = _fireClip;
+            _shootingAudio.clip = _currentWeapon.FireClip;
             _shootingAudio.Play();
             
             _fired = true;
-            _reloadCountdown = _fireDelay;
+            _reloadCountdown = _currentWeapon.FireDelay;
         }
         
         private void LookAtMousePosition()
@@ -83,6 +100,28 @@ namespace MoonMonster.Codetest
             
                 var angle = Mathf.Atan2(dir.z, dir.x) * Mathf.Rad2Deg - _angleOffset;
                 _turret.transform.rotation = Quaternion.AngleAxis(angle, Vector3.down);
+            }
+        }
+
+        public void ChangeWeapon(int weaponIndex)
+        {
+            if (weaponIndex > _weaponData.Count)
+            {
+                Debug.LogError("Trying to select weapon that isnt there");
+                return;
+            }
+            CurrentWeaponIndex = weaponIndex;
+        }
+
+        public void ChangeWeapon(bool up)
+        {
+            if(up)
+            {
+                CurrentWeaponIndex++;
+            }
+            else
+            {
+                CurrentWeaponIndex--;
             }
         }
     }
