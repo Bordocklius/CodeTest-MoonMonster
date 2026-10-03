@@ -25,7 +25,8 @@ namespace MoonMonster.Codetest
                 else if (_currentWeaponIndex >= _weaponData.Count)
                     _currentWeaponIndex = 0;
                 _currentWeapon = _weaponData[_currentWeaponIndex];
-                Debug.Log("Weapon switched: " + _currentWeapon);
+                if(_currentWeapon.SelectClip != null)
+                    _shootingAudio.PlayOneShot(_currentWeapon.SelectClip);
             }
         }
 

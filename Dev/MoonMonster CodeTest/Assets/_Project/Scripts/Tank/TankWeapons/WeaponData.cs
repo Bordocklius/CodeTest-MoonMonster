@@ -7,6 +7,7 @@ namespace MoonMonster.Codetest
     {
         public GameObject Projectile;
         public AudioClip FireClip;
+        public AudioClip SelectClip;
         public float LaunchForce;
         public float FireDelay;
     }
