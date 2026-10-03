@@ -1,6 +1,7 @@
 ﻿using NaughtyAttributes;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace MoonMonster.Codetest
 {
@@ -13,33 +14,52 @@ namespace MoonMonster.Codetest
         [SerializeField, Required] private GameObject _turret;
         [SerializeField] private float _angleOffset = 90f;
 
+        [Header("Reload UI")]
+        [SerializeField] private Slider _reloadSlider;
+        [SerializeField] private Image _fillImage;
+        [SerializeField] private Color _zeroReloadColor, _fullReloadColor;
+
         private int _currentWeaponIndex;
         private int CurrentWeaponIndex
         {
             get => _currentWeaponIndex;
             set
             {
+                if (_fired)
+                    return;
+
                 _currentWeaponIndex = value;
                 if (_currentWeaponIndex < 0)
                     _currentWeaponIndex = _weaponData.Count - 1;
                 else if (_currentWeaponIndex >= _weaponData.Count)
                     _currentWeaponIndex = 0;
-                _currentWeapon = _weaponData[_currentWeaponIndex];
-                if(_currentWeapon.SelectClip != null)
-                    _shootingAudio.PlayOneShot(_currentWeapon.SelectClip);
+                UpdateWeaponSettings();
             }
         }
 
         private WeaponData _currentWeapon;
 
         private float _reloadCountdown;
+        private float ReloadCountdown
+        {
+            get => _reloadCountdown;
+            set
+            {
+                _reloadCountdown = value;
+                SetReloadUI();
+                if (_reloadCountdown <= 0f)
+                    _fired = false;
+            }
+        }
+
         private bool _fired;
         private Camera _camera;
-        
+
         private void Start()
         {
             _camera = Camera.main;
             _currentWeapon = _weaponData[_currentWeaponIndex];
+            _reloadSlider.maxValue = _currentWeapon.FireDelay;
         }
 
         private void Update()
@@ -49,10 +69,7 @@ namespace MoonMonster.Codetest
             
             if (_fired)
             {                
-                if(_reloadCountdown <= 0)
-                    _fired = false;
-                else
-                    _reloadCountdown -= Time.deltaTime;
+                ReloadCountdown -= Time.deltaTime;
             }
         }
         
@@ -84,7 +101,7 @@ namespace MoonMonster.Codetest
             _shootingAudio.Play();
             
             _fired = true;
-            _reloadCountdown = _currentWeapon.FireDelay;
+            ReloadCountdown = _currentWeapon.FireDelay;
         }
         
         private void LookAtMousePosition()
@@ -103,6 +120,15 @@ namespace MoonMonster.Codetest
                 var angle = Mathf.Atan2(dir.z, dir.x) * Mathf.Rad2Deg - _angleOffset;
                 _turret.transform.rotation = Quaternion.AngleAxis(angle, Vector3.down);
             }
+        }
+
+        private void UpdateWeaponSettings()
+        {
+            _currentWeapon = _weaponData[_currentWeaponIndex];
+            _reloadSlider.maxValue = _currentWeapon.FireDelay;
+
+            if (_currentWeapon.SelectClip != null)
+                _shootingAudio.PlayOneShot(_currentWeapon.SelectClip);
         }
 
         public void ChangeWeapon(int weaponIndex)
@@ -125,6 +151,13 @@ namespace MoonMonster.Codetest
             {
                 CurrentWeaponIndex--;
             }
+        }
+
+        private void SetReloadUI()
+        {
+            _reloadSlider.value = ReloadCountdown;
+
+            _fillImage.color = Color.Lerp(_fullReloadColor, _zeroReloadColor, ReloadCountdown / _currentWeapon.FireDelay);
         }
     }
 }
