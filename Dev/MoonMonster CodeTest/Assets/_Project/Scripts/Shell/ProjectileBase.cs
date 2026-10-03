@@ -13,6 +13,7 @@ namespace MoonMonster.Codetest
         [SerializeField] protected float _explosionRadius = 5f;
         [SerializeField] protected float _maxDamage = 100f;
         [SerializeField] protected float _explosionForce = 1000f;
+        [SerializeField] private GameObject _sender;
 
         protected virtual void Start()
         {
@@ -23,19 +24,33 @@ namespace MoonMonster.Codetest
         {
             Collider[] colliders = Physics.OverlapSphere(transform.position, _explosionRadius, _tankMask);
 
-            for (int i = 0; i < colliders.Length; i++)
+            foreach(Collider collider in colliders)
             {
-                if (!colliders[i].TryGetComponent(out Rigidbody targetRigidbody))
+                if (collider.gameObject == _sender)
                     continue;
-
-                targetRigidbody.AddExplosionForce(_explosionForce, transform.position, _explosionRadius);
-
+                if (!collider.TryGetComponent(out Rigidbody targetRigidbody))
+                    continue;
                 if (!targetRigidbody.TryGetComponent(out TankHealth targetHealth))
                     continue;
 
+                targetRigidbody.AddExplosionForce(_explosionForce, transform.position, _explosionRadius);
                 float damage = CalculateDamage(targetRigidbody.position);
                 targetHealth.TakeDamage(damage);
             }
+
+            //for (int i = 0; i < colliders.Length; i++)
+            //{
+            //    if (!colliders[i].TryGetComponent(out Rigidbody targetRigidbody))
+            //        continue;
+
+            //    targetRigidbody.AddExplosionForce(_explosionForce, transform.position, _explosionRadius);
+
+            //    if (!targetRigidbody.TryGetComponent(out TankHealth targetHealth))
+            //        continue;
+
+            //    float damage = CalculateDamage(targetRigidbody.position);
+            //    targetHealth.TakeDamage(damage);
+            //}
 
             _explosionParticles.transform.parent = null;
             _explosionParticles.Play();
@@ -56,6 +71,11 @@ namespace MoonMonster.Codetest
             damage = Mathf.Max(0f, damage);
 
             return damage;
+        }
+
+        public void SetSender(GameObject sender)
+        {
+            _sender = sender;
         }
     }
 }

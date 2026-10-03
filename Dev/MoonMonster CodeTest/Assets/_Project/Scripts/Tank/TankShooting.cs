@@ -75,6 +75,7 @@ namespace MoonMonster.Codetest
             
             GameObject projectile = Instantiate(_currentWeapon.Projectile, _fireTransform.position, _fireTransform.rotation);
             Rigidbody projectileRB = projectile.GetComponent<Rigidbody>();
+            projectile.GetComponent<ProjectileBase>().SetSender(this.gameObject);
 
             projectileRB.linearVelocity = _currentWeapon.LaunchForce * _fireTransform.forward;
 
