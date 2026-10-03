@@ -1,4 +1,5 @@
 ﻿using NaughtyAttributes;
+using System.Linq;
 using UnityEngine;
 
 namespace MoonMonster.Codetest
@@ -23,11 +24,12 @@ namespace MoonMonster.Codetest
         protected virtual void OnTriggerEnter(Collider other)
         {
             Collider[] colliders = Physics.OverlapSphere(transform.position, _explosionRadius, _tankMask);
+            
 
             foreach(Collider collider in colliders)
             {
                 if (collider.gameObject == _sender)
-                    continue;
+                    return;
                 if (!collider.TryGetComponent(out Rigidbody targetRigidbody))
                     continue;
                 if (!targetRigidbody.TryGetComponent(out TankHealth targetHealth))
