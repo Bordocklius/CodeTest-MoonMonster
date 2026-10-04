@@ -16,20 +16,26 @@ namespace MoonMonster.Codetest
         [SerializeField] protected float _explosionForce = 1000f;
         [SerializeField] private GameObject _sender;
 
+        private bool _isAiProjectile;
+
         protected virtual void Start()
         {
             Destroy(this.gameObject, _maxLifeTime);
+            if (_sender.TryGetComponent<AIController>(out AIController ai))
+                _isAiProjectile = true;
         }
 
         protected virtual void OnTriggerEnter(Collider other)
         {
-            Collider[] colliders = Physics.OverlapSphere(transform.position, _explosionRadius, _tankMask);
-            
+            Collider[] colliders = Physics.OverlapSphere(transform.position, _explosionRadius, _tankMask);           
+
 
             foreach(Collider collider in colliders)
             {
                 if (collider.gameObject == _sender)
                     return;
+                if (_isAiProjectile && collider.gameObject.TryGetComponent<AIController>(out AIController ai))
+                    continue;
                 if (!collider.TryGetComponent(out Rigidbody targetRigidbody))
                     continue;
                 if (!targetRigidbody.TryGetComponent(out TankHealth targetHealth))
