@@ -21,8 +21,6 @@ namespace MoonMonster.Codetest
         protected virtual void Start()
         {
             Destroy(this.gameObject, _maxLifeTime);
-            if (_sender.TryGetComponent<AIController>(out AIController ai))
-                _isAiProjectile = true;
         }
 
         protected virtual void OnTriggerEnter(Collider other)
@@ -81,9 +79,10 @@ namespace MoonMonster.Codetest
             return damage;
         }
 
-        public void SetSender(GameObject sender)
+        public void SetSender(GameObject sender, bool isAiProjectile)
         {
             _sender = sender;
+            _isAiProjectile = isAiProjectile;
         }
     }
 }

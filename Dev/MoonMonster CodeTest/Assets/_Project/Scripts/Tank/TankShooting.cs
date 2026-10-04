@@ -54,12 +54,15 @@ namespace MoonMonster.Codetest
 
         private bool _fired;
         private Camera _camera;
+        private bool _isAiControlled;
 
         private void Start()
         {
             _camera = Camera.main;
             _currentWeapon = _weaponData[_currentWeaponIndex];
             _reloadSlider.maxValue = _currentWeapon.FireDelay;
+            if (TryGetComponent<AIController>(out AIController ai))
+                _isAiControlled = true;
         }
 
         private void Update()
@@ -93,7 +96,7 @@ namespace MoonMonster.Codetest
             
             GameObject projectile = Instantiate(_currentWeapon.Projectile, _fireTransform.position, _fireTransform.rotation);
             Rigidbody projectileRB = projectile.GetComponent<Rigidbody>();
-            projectile.GetComponent<ProjectileBase>().SetSender(this.gameObject);
+            projectile.GetComponent<ProjectileBase>().SetSender(this.gameObject, _isAiControlled);
 
             projectileRB.linearVelocity = _currentWeapon.LaunchForce * _fireTransform.forward;
 
