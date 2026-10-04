@@ -7,7 +7,7 @@ namespace MoonMonster.Codetest
 {
     public class TankShooting : MonoBehaviour
     {
-        [SerializeField] private List<WeaponData> _weaponData; 
+        [SerializeField] private List<WeaponData> _weaponData = new(3); 
         [SerializeField] private bool _lookAtMouse;
         [SerializeField, Required] private Transform _fireTransform;
         [SerializeField, Required] private AudioSource _shootingAudio;
