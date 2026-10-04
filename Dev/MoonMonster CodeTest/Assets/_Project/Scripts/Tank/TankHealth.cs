@@ -37,6 +37,7 @@ namespace MoonMonster.Codetest
         }
 
         private bool _dead;
+        public bool IsFullHealth => CurrentHealth == _startingHealth;
 
         private void Awake()
         {

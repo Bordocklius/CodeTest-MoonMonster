@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 namespace MoonMonster.Codetest
 {
@@ -23,6 +24,7 @@ namespace MoonMonster.Codetest
         private WaitForSeconds _endWait;
         private TankManager _roundWinner;
         private TankManager _gameWinner;
+        private List<WrenchPickup> _wrenchPickups;
 
         private void Start()
         {
@@ -92,6 +94,7 @@ namespace MoonMonster.Codetest
         {
             ResetAllTanks();
             DisableTankControl();
+            ClearWrenchPickups();
 
             _cameraControl.SetStartPositionAndSize();
 
@@ -259,6 +262,35 @@ namespace MoonMonster.Codetest
             {
                 _aiTanks[i].DisableControl();
             }
+        }
+
+        public void RegisterPickup(WrenchPickup pickup)
+        {
+            if(_wrenchPickups == null)
+                _wrenchPickups = new List<WrenchPickup>();
+
+            if(!_wrenchPickups.Contains(pickup))
+                _wrenchPickups.Add(pickup);
+        }
+
+        public void UnregisterPickup(WrenchPickup pickup)
+        {
+            if (_wrenchPickups == null)
+                return;
+            _wrenchPickups.Remove(pickup);
+        }
+
+        private void ClearWrenchPickups()
+        {
+            if(_wrenchPickups == null || _wrenchPickups.Count == 0) 
+                return;
+
+            foreach(WrenchPickup wrench in _wrenchPickups)
+            {
+                Destroy(wrench.gameObject);
+            }
+
+            _wrenchPickups.Clear();
         }
     }
 }
